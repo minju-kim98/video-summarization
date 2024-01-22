@@ -67,16 +67,18 @@ y_pred = np.array(y_pred)
 
 sns.displot(y_pred)
 
-THRESHOLD = 0.45
+def determine_threshold(y_pred, THRESHOLD):
+    total_secs = 0
 
-total_secs = 0
+    for i, y_p in enumerate(y_pred):
+        if y_p >= THRESHOLD:
+            total_secs += SAMPLE_EVERY_SEC
+    return total_secs
 
-for i, y_p in enumerate(y_pred):
-    if y_p >= THRESHOLD:
-        print(i * SAMPLE_EVERY_SEC)
-        total_secs += SAMPLE_EVERY_SEC
-
-total_secs
+THRESHOLD = 0.64
+while(total_secs > 60):
+    THRESHOLD -= 0.01
+    total_secs = determine_threshold(y_pred, THRESHOLD)
 
 clip = VideoFileClip(video_path)
 
@@ -95,5 +97,3 @@ for i, y_p in enumerate(y_pred):
 result = concatenate_videoclips(subclips)
 
 result.write_videofile("videos/result.mp4")
-
-result.ipython_display(width=640, maxduration=240)
